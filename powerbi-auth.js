@@ -3,6 +3,7 @@ const axios = require('axios');
 
 let cachedToken = null;
 let tokenExpiresAt = null;
+require("dotenv").config();
 
 const getAccessToken = async () => {
   const currentTime = Math.floor(Date.now() / 1000); // in seconds

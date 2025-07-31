@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { sql } = require('./db'); // adjust path as needed
 const { default: axios } = require('axios');
+const { getAccessToken } = require('./powerbi-auth');
 require("dotenv").config();
 
 const app = express();
@@ -138,7 +139,7 @@ app.post('/api/auth/login', async (req, res) => {
 // });
 
 
-router.get('/api/pbi-token', async (req, res) => {
+app.get('/api/pbi-token', async (req, res) => {
   try {
     const token = await getAccessToken();
     const data = res.json({ accessToken: token });
