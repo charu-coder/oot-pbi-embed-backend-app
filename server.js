@@ -2,10 +2,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { sql } = require('./db'); // adjust path as needed
+const { default: axios } = require('axios');
 require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+// const TENANT_ID = process.env.TENANT_ID
+// const CLIENT_ID = process.env.CLIENT_ID
+// const CLIENT_SECRET =process.env.CLIENT_SECRET
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -111,6 +115,37 @@ app.post('/api/auth/login', async (req, res) => {
   } catch (err) {
     console.error("Login error", err);
     res.status(500).json({ error: "Server error during login" });
+  }
+});
+
+// app.get('/api/pbi-token', async (req, res) => {
+//   console.log('➡️ Received GET request to /api/pbi-token');
+//   const url = `https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/token`;
+
+//   const params = new URLSearchParams();
+//   params.append('grant_type', 'client_credentials');
+//   params.append('client_id', CLIENT_ID);
+//   params.append('client_secret', CLIENT_SECRET);
+//   params.append('scope', 'https://analysis.windows.net/powerbi/api/.default');
+
+//   try {
+//     const response = await axios.post(url, params);
+//     res.json(response.data); // access_token, expires_in, etc.
+//   } catch (err) {
+//     console.error("Error fetching token", err.response?.data || err.message);
+//     res.status(500).json({ error: 'Failed to get token' });
+//   }
+// });
+
+
+router.get('/api/pbi-token', async (req, res) => {
+  try {
+    const token = await getAccessToken();
+    const data = res.json({ accessToken: token });
+    res.status(201).json({ message: 'Token generated', accessToken: token });
+  } catch (err) {
+    console.error('Failed to get Power BI token', err);
+    res.status(500).json({ error: 'Token generation failed' });
   }
 });
 
