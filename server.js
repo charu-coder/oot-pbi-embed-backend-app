@@ -35,7 +35,7 @@ const config = {
 app.get('/api/users', async (req, res) => {
   try {
     await sql.connect(config);
-    const result = await sql.query('SELECT * FROM Users');
+    const result = await sql.query('SELECT * FROM UserAccounts');
     res.json(result.recordset);
   } catch (err) {
     console.error('SQL error', err);
@@ -68,7 +68,7 @@ app.post('/api/auth/register', async (req, res) => {
     console.log('🛠️ Connected to SQL Server');
 
     await sql.query`
-      INSERT INTO Users (Username, Email, PasswordHash, CreatedAt, LastLogin)
+      INSERT INTO UserAccounts (Username, Email, PasswordHash, CreatedAt, LastLogin)
       VALUES (${username}, ${email}, ${passwordHash}, GETDATE(), NULL)
     `;
 
@@ -93,7 +93,7 @@ app.post('/api/auth/login', async (req, res) => {
 
     await sql.connect(config);
     const result = await sql.query`
-      SELECT * FROM Users WHERE Email = ${email}
+      SELECT * FROM UserAccounts WHERE Email = ${email}
     `;
 
     const user = result.recordset[0];
@@ -108,7 +108,7 @@ app.post('/api/auth/login', async (req, res) => {
 
     // Optionally update login timestamp
     await sql.query`
-      UPDATE Users SET LastLogin = GETDATE() WHERE Email = ${email}
+      UPDATE UserAccounts SET LastLogin = GETDATE() WHERE Email = ${email}
     `;
 
     res.json({ message: "Login successful", token: "user_token_here" });
